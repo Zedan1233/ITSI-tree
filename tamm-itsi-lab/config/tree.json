@@ -1,0 +1,97 @@
+{
+  "name": "TAMM ITSI lab",
+  "index": "tamm_feedback",
+  "sourcetype": "tamm:feedback",
+  "root": {
+    "title": "TAMM",
+    "role": "platform",
+    "children": [
+      {
+        "title": "AD Police",
+        "role": "department",
+        "children": [
+          {
+            "title": "Pay Traffic Fines",
+            "role": "journey",
+            "short_leaves": true,
+            "children": [
+              { "title": "APM", "role": "leaf" },
+              { "title": "RUM", "role": "leaf" },
+              { "title": "SNOW", "role": "leaf", "sample": "snow" },
+              {
+                "title": "Feedback",
+                "role": "feedback",
+                "sample": "feedback",
+                "children": [
+                  { "title": "Call Center", "role": "channel", "sample": "call_center" },
+                  { "title": "Survey", "role": "channel", "sample": "survey" },
+                  { "title": "Social Media", "role": "channel", "sample": "social_media" }
+                ]
+              },
+              { "title": "Revenue", "role": "leaf", "sample": "revenue" }
+            ]
+          },
+          {
+            "title": "Get a Driver Licensing",
+            "role": "journey",
+            "children": [
+              { "title": "APM (Get a Driver Licensing)", "role": "leaf" },
+              { "title": "RUM (Get a Driver Licensing)", "role": "leaf" },
+              { "title": "SNOW (Get a Driver Licensing)", "role": "leaf" },
+              {
+                "title": "Feedback (Get a Driver Licensing)",
+                "role": "feedback",
+                "children": [
+                  { "title": "Call Center (Get a Driver Licensing)", "role": "channel" },
+                  { "title": "Survey (Get a Driver Licensing)", "role": "channel" },
+                  { "title": "Social Media (Get a Driver Licensing)", "role": "channel" }
+                ]
+              },
+              { "title": "Revenue (Get a Driver Licensing)", "role": "leaf" }
+            ]
+          },
+          {
+            "title": "Vehicle Accident History",
+            "role": "journey",
+            "children": [
+              { "title": "APM (Vehicle Accident History)", "role": "leaf" },
+              { "title": "RUM (Vehicle Accident History)", "role": "leaf" },
+              { "title": "SNOW (Vehicle Accident History)", "role": "leaf" },
+              {
+                "title": "Feedback (Vehicle Accident History)",
+                "role": "feedback",
+                "children": [
+                  { "title": "Call Center (Vehicle Accident History)", "role": "channel" },
+                  { "title": "Survey (Vehicle Accident History)", "role": "channel" },
+                  { "title": "Social Media (Vehicle Accident History)", "role": "channel" }
+                ]
+              },
+              { "title": "Revenue (Vehicle Accident History)", "role": "leaf" }
+            ]
+          },
+          { "title": "Database", "role": "shared", "sample": "database" },
+          { "title": "AD-Connect Endpoints", "role": "shared", "sample": "ad_connect" }
+        ]
+      },
+      { "title": "AD Judicial Department", "role": "department" },
+      { "title": "Department of Health", "role": "department" },
+      {
+        "title": "Authentication",
+        "role": "platform",
+        "sample": "authentication",
+        "children": [
+          { "title": "UAE Pass", "role": "leaf", "sample": "uaepass" }
+        ]
+      },
+      {
+        "title": "Infrastructure Observability",
+        "role": "platform",
+        "children": [
+          { "title": "AppDynamics", "role": "leaf", "sample": "appdynamics" },
+          { "title": "Azure", "role": "leaf", "sample": "azure" },
+          { "title": "Kubernetes", "role": "leaf", "sample": "kubernetes" }
+        ]
+      }
+    ]
+  }
+}
