@@ -1,4 +1,4 @@
-"""Create or update the TAMM service tree on any ITSI instance (match by title)."""
+"""Create or update the QNB service tree on any ITSI instance (match by title)."""
 from __future__ import annotations
 
 import json

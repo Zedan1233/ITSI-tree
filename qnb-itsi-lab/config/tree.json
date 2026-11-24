@@ -1,0 +1,96 @@
+{
+  "name": "QNB ITSI lab",
+  "index": "tamm_feedback",
+  "sourcetype": "tamm:feedback",
+  "root": {
+    "title": "QNB",
+    "role": "platform",
+    "children": [
+      {
+        "title": "Apply for Credit Card",
+        "role": "journey",
+        "short_leaves": true,
+        "children": [
+          { "title": "APM", "role": "leaf" },
+          { "title": "RUM", "role": "leaf" },
+          { "title": "Card eligibility service", "role": "leaf" },
+          { "title": "Card printing service", "role": "leaf" },
+          { "title": "SNOW", "role": "leaf", "sample": "snow" },
+          {
+            "title": "Feedback",
+            "role": "feedback",
+            "sample": "feedback",
+            "children": [
+              { "title": "Call Center", "role": "channel", "sample": "call_center" },
+              { "title": "Survey", "role": "channel", "sample": "survey" },
+              { "title": "Social Media", "role": "channel", "sample": "social_media" }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Apply for Personal Loan",
+        "role": "journey",
+        "children": [
+          { "title": "APM (Apply for Personal Loan)", "role": "leaf" },
+          { "title": "RUM (Apply for Personal Loan)", "role": "leaf" },
+          { "title": "SNOW (Apply for Personal Loan)", "role": "leaf" },
+          {
+            "title": "Feedback (Apply for Personal Loan)",
+            "role": "feedback",
+            "children": [
+              { "title": "Call Center (Apply for Personal Loan)", "role": "channel" },
+              { "title": "Survey (Apply for Personal Loan)", "role": "channel" },
+              { "title": "Social Media (Apply for Personal Loan)", "role": "channel" }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Authentication",
+        "role": "platform",
+        "sample": "authentication",
+        "children": [
+          { "title": "Auth Provider", "role": "leaf", "sample": "auth_provider" }
+        ]
+      },
+      {
+        "title": "Infrastructure Observability",
+        "role": "platform",
+        "children": [
+          { "title": "AppDynamics", "role": "leaf", "sample": "appdynamics" },
+          { "title": "Azure", "role": "leaf", "sample": "azure" },
+          { "title": "Kubernetes", "role": "leaf", "sample": "kubernetes" },
+          {
+            "title": "Network",
+            "role": "platform",
+            "children": [
+              { "title": "Cisco switches", "role": "leaf", "sample": "switch" },
+              { "title": "Network NetFlow", "role": "leaf", "sample": "netflow" },
+              { "title": "Packet inspection", "role": "leaf", "sample": "packet" },
+              { "title": "Cisco firewall", "role": "leaf", "sample": "firewall" },
+              { "title": "SD-WAN", "role": "leaf", "sample": "sdwan" }
+            ]
+          },
+          {
+            "title": "Storage",
+            "role": "platform",
+            "children": [
+              { "title": "PowerMax arrays", "role": "leaf", "sample": "powermax" }
+            ]
+          },
+          {
+            "title": "SaaS services",
+            "role": "platform",
+            "children": [
+              { "title": "Microsoft Teams", "role": "leaf", "sample": "teams" },
+              { "title": "Office 365", "role": "leaf", "sample": "o365" },
+              { "title": "Cisco Webex", "role": "leaf", "sample": "webex" }
+            ]
+          }
+        ]
+      },
+      { "title": "AI Agent Observability", "role": "leaf", "sample": "ai_agent" }
+    ]
+  }
+}
