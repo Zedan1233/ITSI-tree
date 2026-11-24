@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from datetime import datetime, timedelta, timezone
 
@@ -123,13 +124,20 @@ def _eligible(kpis: list[dict]) -> list[dict]:
     return chosen or _unique_kpis(kpis)
 
 
+def forced_severity() -> str | None:
+    """ITSI_LAB_DEMO_SEVERITY=critical (or high/medium/low/normal) colors every leaf KPI."""
+    raw = os.environ.get("ITSI_LAB_DEMO_SEVERITY", "").strip().lower()
+    return raw if raw in WORSE_RANK else None
+
+
 def make_plan(title: str, kpis: list[dict], headline: str, index: int) -> dict:
     eligible = _eligible(kpis)
     focus = eligible[index % len(eligible)]
     secondary = eligible[(eligible.index(focus) + 1) % len(eligible)]
     severities = {}
+    force_all = forced_severity() == headline and headline != "normal"
     for kpi in _unique_kpis(kpis):
-        if kpi["threshold_field"] == focus["threshold_field"]:
+        if force_all or kpi["threshold_field"] == focus["threshold_field"]:
             severities[kpi["title"]] = headline
         elif headline != "normal" and kpi["threshold_field"] == secondary["threshold_field"]:
             severities[kpi["title"]] = HEALTHIER[headline]
@@ -146,7 +154,7 @@ def make_plan(title: str, kpis: list[dict], headline: str, index: int) -> dict:
         "channel": channel_of(kpis[0]),
         "kpis": kpis,
         "severities": severities,
-        "status": STATUS_CYCLE[index % len(STATUS_CYCLE)],
+        "status": "1" if force_all else STATUS_CYCLE[index % len(STATUS_CYCLE)],
     }
 
 
@@ -154,8 +162,10 @@ def assign_plans() -> list[dict]:
     titles = leaf_titles()
     cat = catalog()
     plans = []
+    forced = forced_severity()
     for index, title in enumerate(titles):
-        plans.append(make_plan(title, cat[title], PATTERN[index % len(PATTERN)], index))
+        headline = forced or PATTERN[index % len(PATTERN)]
+        plans.append(make_plan(title, cat[title], headline, index))
     by_channel: dict[str, list[dict]] = {}
     for plan in plans:
         by_channel.setdefault(plan["channel"], []).append(plan)

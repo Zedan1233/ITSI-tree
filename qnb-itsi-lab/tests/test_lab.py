@@ -350,6 +350,28 @@ class DemoTests(unittest.TestCase):
         self.assertGreaterEqual(min(times), start)
         self.assertLess(max(times), start + timedelta(minutes=15))
 
+    def test_forced_critical_puts_every_leaf_in_critical(self):
+        import os
+
+        from itsi_lab.demo import actual_severities, assign_plans, compile_channels, episode_specs
+
+        os.environ["ITSI_LAB_DEMO_SEVERITY"] = "critical"
+        try:
+            plans = assign_plans()
+            self.assertTrue(all(plan["headline"] == "critical" for plan in plans))
+            self.assertTrue(all(plan["status"] == "1" for plan in plans))
+            specs = compile_channels(plans)
+            actual = actual_severities(plans, specs)
+            for title, bands in actual.items():
+                self.assertIn("critical", bands.values(), title)
+            notables = episode_specs(plans, specs)
+            worst = {}
+            for item in notables:
+                worst[item["service"]] = max(worst.get(item["service"], 0), int(item["severity"]))
+            self.assertTrue(all(severity == 6 for severity in worst.values()), worst)
+        finally:
+            os.environ.pop("ITSI_LAB_DEMO_SEVERITY", None)
+
 
 class ExportTests(unittest.TestCase):
     def test_export_strips_host_ids_and_health_kpi(self):
