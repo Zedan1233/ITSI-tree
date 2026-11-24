@@ -5,7 +5,7 @@ import argparse
 import json
 import sys
 
-from . import client, kpis, samples, tree
+from . import client, demo, episodes, export_config, glass, kpis, samples, source_glass, tree
 
 
 def cmd_ping(_args):
@@ -37,6 +37,37 @@ def cmd_apply_kpis(_args):
     kpis.apply()
 
 
+def cmd_apply_glass(_args):
+    glass.apply()
+
+
+def cmd_apply_episodes(_args):
+    episodes.apply()
+
+
+def cmd_apply_source_glass(_args):
+    source_glass.apply()
+
+
+def cmd_demo(_args):
+    demo.apply()
+
+
+def cmd_apply_config(_args):
+    print("== service tree ==")
+    tree.apply()
+    print("== KPIs ==")
+    kpis.apply()
+    print("== glass tables ==")
+    glass.apply()
+    source_glass.apply()
+    print("configuration applied. No sample events were ingested.")
+
+
+def cmd_export(_args):
+    export_config.apply()
+
+
 def cmd_seed(_args):
     print("== ping ==")
     cmd_ping(_args)
@@ -46,7 +77,9 @@ def cmd_seed(_args):
     samples.apply()
     print("== KPIs ==")
     kpis.apply()
-    print("done. Open ITSI Service Analyzer and wait a few minutes for KPI searches.")
+    print("== glass tables ==")
+    glass.apply()
+    print("done. Open ITSI Service Analyzer / Glass Tables and wait a few minutes for KPI searches.")
 
 
 def main(argv=None):
@@ -60,14 +93,26 @@ def main(argv=None):
     sub.add_parser("apply-tree", help="Create/update entities and the QNB service tree")
     sub.add_parser("ingest-samples", help="Write 24h + last-3h degradation events")
     sub.add_parser("apply-kpis", help="Attach lab KPIs (thresholds + TVT) by service title")
-    sub.add_parser("seed", help="ping + tree + samples + KPIs")
+    sub.add_parser("apply-glass", help="Create/update QNB executive and operations glass tables")
+    sub.add_parser("apply-episodes", help="Open Episode Review notables for PTF, Database, Infra")
+    sub.add_parser("apply-source-glass", help="Create the business and infrastructure source glass tables")
+    sub.add_parser("apply-config", help="Apply the service tree, KPIs, and glass tables without sample data")
+    sub.add_parser("export", help="Write services, KPIs, and glass tables to export/ without event data")
+    sub.add_parser("seed", help="ping + tree + samples + KPIs + glass table")
+    sub.add_parser("demo", help="Mixed leaf KPI data for the next 3 hours, plus an episode on each leaf")
     args = parser.parse_args(argv)
     {
         "ping": cmd_ping,
         "apply-tree": cmd_apply_tree,
         "ingest-samples": cmd_ingest,
         "apply-kpis": cmd_apply_kpis,
+        "apply-glass": cmd_apply_glass,
+        "apply-episodes": cmd_apply_episodes,
+        "apply-source-glass": cmd_apply_source_glass,
+        "apply-config": cmd_apply_config,
+        "export": cmd_export,
         "seed": cmd_seed,
+        "demo": cmd_demo,
     }[args.cmd](args)
 
 

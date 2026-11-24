@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import ssl
+import http.cookiejar
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -54,7 +55,45 @@ def _password() -> str | None:
     return None
 
 
+def _via_web() -> bool:
+    return os.environ.get("SPLUNK_VIA_WEB", "").strip().lower() in ("1", "true", "yes")
+
+
+_WEB: dict = {}
+
+
+def _web_session():
+    """Splunk Web login for instances that only expose port 443; REST goes through /splunkd/__raw."""
+    if _WEB:
+        return _WEB["opener"], _WEB["csrf"]
+    base = os.environ.get("SPLUNK_WEB_URL", "").strip().rstrip("/")
+    if not base:
+        raise SystemExit("Set SPLUNK_WEB_URL when SPLUNK_VIA_WEB=1")
+    user = os.environ.get("SPLUNK_USERNAME", "admin")
+    pw = _password()
+    if not pw:
+        raise SystemExit("Set SPLUNK_PASSWORD for web-session mode")
+    jar = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(
+        urllib.request.HTTPCookieProcessor(jar), urllib.request.HTTPSHandler(context=CTX)
+    )
+    opener.open(base + "/en-US/account/login", timeout=60).read()
+    cval = next((c.value for c in jar if c.name == "cval"), "")
+    form = urllib.parse.urlencode(
+        {"username": user, "password": pw, "cval": cval, "set_has_logged_in": "false"}
+    ).encode()
+    try:
+        opener.open(urllib.request.Request(base + "/en-US/account/login", data=form), timeout=60).read()
+    except urllib.error.HTTPError as exc:
+        raise SystemExit(f"Splunk Web login failed: {exc.code}") from exc
+    csrf = next((c.value for c in jar if c.name.startswith("splunkweb_csrf_token")), "")
+    _WEB.update({"opener": opener, "csrf": csrf, "base": base})
+    return opener, csrf
+
+
 def mgmt_url() -> str:
+    if _via_web():
+        return os.environ.get("SPLUNK_WEB_URL", "").strip().rstrip("/")
     url = os.environ.get("SPLUNK_MGMT_URL", "").rstrip("/")
     if not url:
         raise SystemExit("Set SPLUNK_MGMT_URL, for example https://host:8089")
@@ -62,12 +101,18 @@ def mgmt_url() -> str:
 
 
 def request(method: str, path: str, *, query=None, form=None, json_body=None, raw=None, timeout=120):
-    url = mgmt_url() + path
+    web = _via_web()
+    url = (mgmt_url() + "/en-US/splunkd/__raw" if web else mgmt_url()) + path
     if query:
         url += "?" + urllib.parse.urlencode(query)
     headers = {"Accept": "application/json"}
     token = _token()
-    if token:
+    if web:
+        _, csrf = _web_session()
+        headers["X-Requested-With"] = "XMLHttpRequest"
+        if method != "GET":
+            headers["X-Splunk-Form-Key"] = csrf
+    elif token:
         headers["Authorization"] = "Bearer " + token
     else:
         user = os.environ.get("SPLUNK_USERNAME", "admin")
@@ -88,8 +133,9 @@ def request(method: str, path: str, *, query=None, form=None, json_body=None, ra
         data = raw if isinstance(raw, bytes) else raw.encode()
         headers["Content-Type"] = "text/plain"
     req = urllib.request.Request(url, data=data, method=method, headers=headers)
+    open_url = _web_session()[0].open if web else (lambda r, timeout: urllib.request.urlopen(r, context=CTX, timeout=timeout))
     try:
-        with urllib.request.urlopen(req, context=CTX, timeout=timeout) as resp:
+        with open_url(req, timeout=timeout) as resp:
             body = resp.read().decode()
             if not body:
                 return resp.status, None

@@ -44,7 +44,6 @@
           }
         ]
       },
-      { "title": "Database", "role": "shared", "sample": "database" },
       {
         "title": "Authentication",
         "role": "platform",
@@ -59,9 +58,37 @@
         "children": [
           { "title": "AppDynamics", "role": "leaf", "sample": "appdynamics" },
           { "title": "Azure", "role": "leaf", "sample": "azure" },
-          { "title": "Kubernetes", "role": "leaf", "sample": "kubernetes" }
+          { "title": "Kubernetes", "role": "leaf", "sample": "kubernetes" },
+          {
+            "title": "Network",
+            "role": "platform",
+            "children": [
+              { "title": "Cisco switches", "role": "leaf", "sample": "switch" },
+              { "title": "Network NetFlow", "role": "leaf", "sample": "netflow" },
+              { "title": "Packet inspection", "role": "leaf", "sample": "packet" },
+              { "title": "Cisco firewall", "role": "leaf", "sample": "firewall" },
+              { "title": "SD-WAN", "role": "leaf", "sample": "sdwan" }
+            ]
+          },
+          {
+            "title": "Storage",
+            "role": "platform",
+            "children": [
+              { "title": "PowerMax arrays", "role": "leaf", "sample": "powermax" }
+            ]
+          },
+          {
+            "title": "SaaS services",
+            "role": "platform",
+            "children": [
+              { "title": "Microsoft Teams", "role": "leaf", "sample": "teams" },
+              { "title": "Office 365", "role": "leaf", "sample": "o365" },
+              { "title": "Cisco Webex", "role": "leaf", "sample": "webex" }
+            ]
+          }
         ]
-      }
+      },
+      { "title": "AI Agent Observability", "role": "leaf", "sample": "ai_agent" }
     ]
   }
 }
