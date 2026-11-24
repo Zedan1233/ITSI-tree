@@ -20,8 +20,23 @@ class TreeTests(unittest.TestCase):
         titles = self._walk(self.tree["root"], [])
         self.assertEqual(len(titles), len(set(titles)), titles)
 
-    def test_root_is_tamm(self):
-        self.assertEqual(self.tree["root"]["title"], "TAMM")
+    def test_root_is_qnb(self):
+        self.assertEqual(self.tree["root"]["title"], "QNB")
+
+    def test_journeys_and_auth_provider(self):
+        titles = self._walk(self.tree["root"], [])
+        self.assertIn("Apply for Credit Card", titles)
+        self.assertIn("Apply for Personal Loan", titles)
+        self.assertIn("Auth Provider", titles)
+        self.assertNotIn("UAE Pass", titles)
+        self.assertNotIn("MOI", titles)
+        self.assertNotIn("Revenue", titles)
+        payment = [
+            node
+            for node in titles
+            if "payment" in node.lower() or node.startswith("Revenue")
+        ]
+        self.assertEqual(payment, [])
 
 
 class CatalogTests(unittest.TestCase):
@@ -59,15 +74,15 @@ class SampleTests(unittest.TestCase):
             "survey",
             "social_media",
             "snow",
-            "revenue",
-            "uaepass",
+            "auth_provider",
             "authentication",
             "appdynamics",
             "azure",
             "kubernetes",
             "database",
-            "ad_connect",
         }
+        self.assertNotIn("revenue", channels)
+        self.assertNotIn("uaepass", channels)
         self.assertTrue(expected.issubset(channels), channels)
         self.assertGreater(len(events), 1000)
         times = [ev["time"] for ev in events]

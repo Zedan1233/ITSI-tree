@@ -53,11 +53,11 @@ def main(argv=None):
     client.load_dotenv()
     parser = argparse.ArgumentParser(
         prog="python -m itsi_lab",
-        description="Portable TAMM Splunk ITSI lab. Match services by title; no instance keys.",
+        description="Portable QNB Splunk ITSI lab. Match services by title; no instance keys.",
     )
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("ping", help="Check management URL and auth")
-    sub.add_parser("apply-tree", help="Create/update entities and the TAMM service tree")
+    sub.add_parser("apply-tree", help="Create/update entities and the QNB service tree")
     sub.add_parser("ingest-samples", help="Write 24h + last-3h degradation events")
     sub.add_parser("apply-kpis", help="Attach lab KPIs (thresholds + TVT) by service title")
     sub.add_parser("seed", help="ping + tree + samples + KPIs")

@@ -1,33 +1,33 @@
-# TAMM Splunk ITSI lab
+# QNB Splunk ITSI lab
 
-Portable lab that recreates the TAMM service tree, sample events, and KPI thresholds on **any** Splunk Enterprise + ITSI instance.
+Portable lab that recreates the QNB service tree, sample events, and KPI thresholds on **any** Splunk Enterprise + ITSI instance.
+
+Forked from the TAMM MOI lab: MOI became QNB, UAE Pass became Auth Provider, the payment/Revenue child was removed, and the two customer journeys are credit card and personal loan applications.
 
 Services are matched by **title**, not by `_key`. Nothing in this repo is bound to a Splunk Show host, REST token, or instance-specific UUID.
 
 ## What you get
 
 ```
-TAMM
- ├── AD Police
- │    ├── Pay Traffic Fines
- │    │    ├── APM / RUM / SNOW / Revenue
- │    │    └── Feedback → Call Center, Survey, Social Media
- │    ├── Get a Driver Licensing   (qualified leaf titles)
- │    ├── Vehicle Accident History (qualified leaf titles)
- │    ├── Database
- │    └── AD-Connect Endpoints
- ├── AD Judicial Department
- ├── Department of Health
- ├── Authentication → UAE Pass
+QNB
+ ├── Apply for Credit Card
+ │    ├── APM / RUM / SNOW
+ │    └── Feedback → Call Center, Survey, Social Media
+ ├── Apply for Personal Loan   (qualified leaf titles)
+ ├── Database
+ ├── Authentication → Auth Provider
  └── Infrastructure Observability → AppDynamics, Azure, Kubernetes
 ```
 
-ITSI requires unique service titles. The first journey (`Pay Traffic Fines`) uses short names (`APM`, `Feedback`, `Call Center`). Other journeys use qualified titles such as `APM (Get a Driver Licensing)`.
+
+ITSI requires unique service titles. The first journey (`Apply for Credit Card`) uses short names (`APM`, `Feedback`, `Call Center`). The second journey uses qualified titles such as `APM (Apply for Personal Loan)`.
+
+There is no payment/Revenue child. Journey health comes from APM, RUM, SNOW, and feedback channels.
 
 Sample data shares **one incident narrative**:
 
 - Hours −24 to −3: healthy baseline
-- Last 3 hours: degradation (volume, errors, latency, CSAT, P1/P2, payment failures)
+- Last 3 hours: degradation (volume, errors, latency, CSAT, P1/P2)
 
 Events go to index `tamm_feedback`, sourcetype `tamm:feedback`, as `TIMESTAMP JSON`. KPI ad hoc searches `rex` the JSON then `spath`.
 
@@ -65,7 +65,7 @@ python -m itsi_lab seed
 
 1. `apply-tree` — upsert entities + services, wire `services_depends_on`
 2. `ingest-samples` — create the index if needed, then ingest ~24h of events
-3. `apply-kpis` — attach KPIs on leaf services (Call Center, Survey, Social Media, SNOW, Revenue, UAE Pass, Authentication, AppDynamics, Azure, Kubernetes, Database, AD-Connect Endpoints)
+3. `apply-kpis` — attach KPIs on leaf services (Call Center, Survey, Social Media, SNOW, Auth Provider, Authentication, AppDynamics, Azure, Kubernetes, Database)
 
 ITSI KPI searches backfill `-24h`. Wait a few minutes, then open **Service Analyzer**. Parent health comes from child Service Health Score KPIs; leaf urgency is set so a few bad leaves do not paint the whole tree red.
 

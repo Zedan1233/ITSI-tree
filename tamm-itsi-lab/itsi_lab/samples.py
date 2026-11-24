@@ -11,7 +11,7 @@ from . import client
 
 INDEX = os.environ.get("TAMM_SAMPLE_INDEX", "tamm_feedback")
 SOURCETYPE = os.environ.get("TAMM_SAMPLE_SOURCETYPE", "tamm:feedback")
-JOURNEY = "pay_traffic_fines"
+JOURNEY = "apply_for_credit_card"
 
 
 def degraded(ts: datetime, now: datetime) -> bool:
@@ -90,7 +90,7 @@ def gen_feedback(now: datetime) -> list[dict]:
     return events
 
 
-def gen_snow_revenue(now: datetime) -> list[dict]:
+def gen_snow(now: datetime) -> list[dict]:
     rng = random.Random(99)
     events = []
     start = now - timedelta(hours=24)
@@ -116,7 +116,7 @@ def gen_snow_revenue(now: datetime) -> list[dict]:
                 "aged": 100 if ((not resolved) and rng.random() < (0.30 if bad else 0.05)) else 0,
                 "mtta_min": mtta,
                 "mttr_min": 0 if not resolved else max(mtta + 5, int(rng.gauss(170 if bad else 35, 20))),
-                "assignment_group": "TAMM-PayFines",
+                "assignment_group": "QNB-CreditCard",
             }
         )
         ts += timedelta(seconds=gap)
@@ -141,29 +141,6 @@ def gen_snow_revenue(now: datetime) -> list[dict]:
             }
         )
         ts += timedelta(seconds=rng.randint(300, 600) if bad else rng.randint(900, 1800))
-
-    ts = start + timedelta(seconds=20)
-    while ts <= now:
-        bad = degraded(ts, now)
-        abandoned = rng.random() < (0.18 if bad else 0.04)
-        failed = (not abandoned) and rng.random() < (0.16 if bad else 0.02)
-        success = not abandoned and not failed
-        events.append(
-            {
-                "time": ts,
-                "journey": JOURNEY,
-                "channel": "revenue",
-                "event_type": "payment",
-                "payment_id": str(uuid.uuid4()),
-                "amount_aed": round(max(50.0, rng.gauss(280, 90)), 2),
-                "success": 100 if success else 0,
-                "failed": 100 if failed else 0,
-                "abandoned": 100 if abandoned else 0,
-                "refund": 100 if success and rng.random() < (0.09 if bad else 0.012) else 0,
-                "method": rng.choice(["uae_pass_wallet", "card", "apple_pay"]),
-            }
-        )
-        ts += timedelta(seconds=rng.randint(20, 45) if bad else rng.randint(40, 90))
     return events
 
 
@@ -183,8 +160,8 @@ def gen_platform(now: datetime) -> list[dict]:
             ts += timedelta(seconds=rng.randint(lo, hi))
 
     walk(
-        "uaepass",
-        "tamm_platform",
+        "auth_provider",
+        "qnb_platform",
         lambda bad: {
             "success": 100 if rng.random() > (0.28 if bad else 0.012) else 0,
             "latency_ms": int(clamp(rng.gauss(2400 if bad else 380, 180 if bad else 60), 80, 8000)),
@@ -194,12 +171,12 @@ def gen_platform(now: datetime) -> list[dict]:
     )
     walk(
         "authentication",
-        "tamm_platform",
+        "qnb_platform",
         lambda bad: {"session_ok": 100 if rng.random() > (0.26 if bad else 0.01) else 0},
     )
     walk(
         "appdynamics",
-        "tamm_platform",
+        "qnb_platform",
         lambda bad: {
             "ingest_healthy": clamp(rng.gauss(72 if bad else 99.4, 4), 0, 100),
             "bt_error_rate": clamp(rng.gauss(7.5 if bad else 0.35, 1.2 if bad else 0.15), 0, 40),
@@ -209,7 +186,7 @@ def gen_platform(now: datetime) -> list[dict]:
     )
     walk(
         "azure",
-        "tamm_platform",
+        "qnb_platform",
         lambda bad: {
             "unhealthy_resources": max(0, int(rng.gauss(7 if bad else 0.2, 1.5))),
             "appservice_avail": clamp(rng.gauss(91 if bad else 99.7, 1.5), 70, 100),
@@ -219,7 +196,7 @@ def gen_platform(now: datetime) -> list[dict]:
     )
     walk(
         "kubernetes",
-        "tamm_platform",
+        "qnb_platform",
         lambda bad: {
             "crashloop_pct": clamp(rng.gauss(16 if bad else 0.8, 3 if bad else 0.3), 0, 50),
             "node_notready": max(0, int(rng.gauss(2 if bad else 0, 0.6))),
@@ -239,22 +216,12 @@ def gen_platform(now: datetime) -> list[dict]:
             "storage_pct": clamp(rng.gauss(79 if bad else 71, 1.2), 40, 95),
         },
     )
-    walk(
-        "ad_connect",
-        JOURNEY,
-        lambda bad: {
-            "availability": clamp(rng.gauss(84 if bad else 99.6, 2), 60, 100),
-            "handshake_fail": clamp(rng.gauss(20 if bad else 0.8, 3 if bad else 0.2), 0, 50),
-            "consumer_error": clamp(rng.gauss(17 if bad else 1.5, 3 if bad else 0.3), 0, 50),
-            "cert_days_left": 11,
-        },
-    )
     return events
 
 
 def generate(now: datetime | None = None) -> list[dict]:
     now = now or datetime.now(timezone.utc).replace(tzinfo=None)
-    return gen_feedback(now) + gen_snow_revenue(now) + gen_platform(now)
+    return gen_feedback(now) + gen_snow(now) + gen_platform(now)
 
 
 def ensure_index():
@@ -280,7 +247,7 @@ def ensure_index():
         raise
 
 
-def ingest(events: list[dict], host: str = "tamm-lab") -> int:
+def ingest(events: list[dict], host: str = "qnb-lab") -> int:
     sent = 0
     batch = []
 

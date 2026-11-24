@@ -158,17 +158,11 @@ def catalog():
             _kpi("Aged Tickets", "snow", "aged", "avg", "%", 5, worse([(8, "low"), (14, "medium"), (20, "high"), (28, "critical")], "aged"), "event_type=incident"),
             _kpi("Change Failure Rate", "snow", "change_failed", "avg", "%", 6, worse([(8, "low"), (14, "medium"), (22, "high"), (30, "critical")], "change_failed"), "event_type=change"),
         ],
-        "Revenue": [
-            _kpi("Payment Success Rate", "revenue", "success", "avg", "%", 11, better([(0, "critical"), (70, "high"), (80, "medium"), (90, "low"), (96, "normal")], "success", 100)),
-            _kpi("Payment Failure Rate", "revenue", "failed", "avg", "%", 10, worse([(4, "low"), (8, "medium"), (12, "high"), (16, "critical")], "failed")),
-            _kpi("Abandoned Checkout", "revenue", "abandoned", "avg", "%", 7, worse([(6, "low"), (10, "medium"), (14, "high"), (18, "critical")], "abandoned")),
-            _kpi("Refund Rate", "revenue", "refund", "avg", "%", 4, worse([(3, "low"), (5, "medium"), (7, "high"), (10, "critical")], "refund")),
-        ],
-        "UAE Pass": [
-            _kpi("Login Success Rate", "uaepass", "success", "avg", "%", 11, better([(0, "critical"), (80, "high"), (90, "medium"), (96, "low"), (99, "normal")], "success", 100)),
-            _kpi("Auth P95", "uaepass", "latency_ms", "avg", "ms", 10, worse([(800, "low"), (1200, "medium"), (1800, "high"), (2400, "critical")], "latency_ms")),
-            _kpi("SAML Error Rate", "uaepass", "saml_error", "avg", "%", 10, worse([(3, "low"), (6, "medium"), (10, "high"), (15, "critical")], "saml_error")),
-            _kpi("MFA Failure Rate", "uaepass", "mfa_fail", "avg", "%", 6, worse([(4, "low"), (7, "medium"), (10, "high"), (14, "critical")], "mfa_fail")),
+        "Auth Provider": [
+            _kpi("Login Success Rate", "auth_provider", "success", "avg", "%", 11, better([(0, "critical"), (80, "high"), (90, "medium"), (96, "low"), (99, "normal")], "success", 100)),
+            _kpi("Auth P95", "auth_provider", "latency_ms", "avg", "ms", 10, worse([(800, "low"), (1200, "medium"), (1800, "high"), (2400, "critical")], "latency_ms")),
+            _kpi("SAML Error Rate", "auth_provider", "saml_error", "avg", "%", 10, worse([(3, "low"), (6, "medium"), (10, "high"), (15, "critical")], "saml_error")),
+            _kpi("MFA Failure Rate", "auth_provider", "mfa_fail", "avg", "%", 6, worse([(4, "low"), (7, "medium"), (10, "high"), (14, "critical")], "mfa_fail")),
         ],
         "Authentication": [
             _kpi("Session Establish Rate", "authentication", "session_ok", "avg", "%", 11, better([(0, "critical"), (80, "high"), (90, "medium"), (96, "low"), (99, "normal")], "session_ok", 100)),
@@ -198,12 +192,6 @@ def catalog():
             _kpi("Connection Saturation", "database", "conn_sat_pct", "avg", "%", 8, worse([(70, "low"), (80, "medium"), (88, "high"), (93, "critical")], "conn_sat_pct")),
             _kpi("Replication Lag", "database", "repl_lag_sec", "avg", "sec", 7, worse([(5, "low"), (10, "medium"), (20, "high"), (35, "critical")], "repl_lag_sec")),
             _kpi("Storage Used", "database", "storage_pct", "avg", "%", 4, worse([(75, "low"), (82, "medium"), (88, "high"), (92, "critical")], "storage_pct")),
-        ],
-        "AD-Connect Endpoints": [
-            _kpi("Endpoint Availability", "ad_connect", "availability", "avg", "%", 11, better([(0, "critical"), (90, "high"), (95, "medium"), (98, "low"), (99.5, "normal")], "availability", 100)),
-            _kpi("Handshake Failures", "ad_connect", "handshake_fail", "avg", "%", 10, worse([(2, "low"), (5, "medium"), (10, "high"), (16, "critical")], "handshake_fail")),
-            _kpi("Consumer Error Rate", "ad_connect", "consumer_error", "avg", "%", 8, worse([(3, "low"), (6, "medium"), (10, "high"), (15, "critical")], "consumer_error")),
-            _kpi("Certificate Days Left", "ad_connect", "cert_days_left", "avg", "days", 5, better([(0, "critical"), (7, "high"), (14, "medium"), (30, "low"), (60, "normal")], "cert_days_left", 120)),
         ],
     }
 
