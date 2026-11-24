@@ -25,6 +25,7 @@ Optional data, after the configuration is in place:
 
 ```bash
 python -m itsi_lab ingest-samples   # 24 hours of events
+python -m itsi_lab fill             # 24h across every KPI channel for the tree and glass tables
 python -m itsi_lab demo             # forward KPI data plus one episode per leaf
 ITSI_LAB_DEMO_SEVERITY=critical python -m itsi_lab demo   # every leaf KPI and episode at Critical
 ```

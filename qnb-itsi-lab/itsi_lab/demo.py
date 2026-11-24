@@ -643,6 +643,33 @@ def _wait_for_open_episodes(minimum: int, timeout=180) -> list[dict]:
     return latest
 
 
+def fill_history(hours: int = 24):
+    """Write KPI-aligned events for every catalog channel so the tree and glass tables populate."""
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    start = now - timedelta(hours=hours)
+    end = now + timedelta(hours=3, minutes=10)
+    plans = assign_plans()
+    specs = compile_channels(plans)
+    channels = sorted(specs)
+    print(
+        json.dumps(
+            {
+                "kpi_channels": len(channels),
+                "kpis": sum(len(plan["kpis"]) for plan in plans),
+                "from": start.isoformat(),
+                "until": end.isoformat(),
+            },
+            indent=2,
+        )
+    )
+    ensure_index()
+    events = generate_demo(start, end, plans, specs)
+    print(f"fill events {len(events)}")
+    sent = ingest([dict(event) for event in events])
+    print(json.dumps({"sent": sent, "channels": channels}, indent=2))
+    return {"sent": sent, "channels": channels}
+
+
 def apply():
     now = datetime.now(timezone.utc).replace(tzinfo=None)
     last = _latest_event_time()

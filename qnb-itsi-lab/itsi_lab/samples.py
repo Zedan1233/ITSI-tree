@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import urllib.parse
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -461,23 +462,63 @@ def ensure_index():
     try:
         client.request("GET", f"/services/data/indexes/{INDEX}", query={"output_mode": "json"})
         print(f"index {INDEX} exists")
-        return
     except RuntimeError as exc:
         if "404" not in str(exc) and "409" not in str(exc):
             print(f"index lookup: {exc}")
+        else:
+            try:
+                client.request(
+                    "POST",
+                    "/services/data/indexes",
+                    form={"name": INDEX, "datatype": "event"},
+                    query={"output_mode": "json"},
+                )
+                print(f"created index {INDEX}")
+            except RuntimeError as created:
+                if "409" not in str(created) and "already exists" not in str(created).lower():
+                    raise
+                print(f"index {INDEX} already exists")
+    ensure_sourcetype()
+
+
+def ensure_sourcetype():
+    """Parse the leading event timestamp so KPI windows match generated history."""
+    stanza = SOURCETYPE
+    settings = {
+        "TIME_PREFIX": "^",
+        "TIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+        "MAX_TIMESTAMP_LOOKAHEAD": "19",
+        "SHOULD_LINEMERGE": "false",
+        "LINE_BREAKER": r"([\r\n]+)",
+        "TRUNCATE": "10000",
+        "KV_MODE": "none",
+    }
+    encoded = urllib.parse.quote(stanza, safe="")
     try:
         client.request(
             "POST",
-            "/services/data/indexes",
-            form={"name": INDEX, "datatype": "event"},
+            f"/servicesNS/nobody/system/configs/conf-props/{encoded}",
+            form=settings,
             query={"output_mode": "json"},
         )
-        print(f"created index {INDEX}")
+        print(f"updated sourcetype {stanza} timestamp extraction")
+        return
+    except RuntimeError as exc:
+        if "404" not in str(exc):
+            print(f"sourcetype update: {exc}")
+    try:
+        client.request(
+            "POST",
+            "/servicesNS/nobody/system/configs/conf-props",
+            form={"name": stanza, **settings},
+            query={"output_mode": "json"},
+        )
+        print(f"created sourcetype {stanza} timestamp extraction")
     except RuntimeError as exc:
         if "409" in str(exc) or "already exists" in str(exc).lower():
-            print(f"index {INDEX} already exists")
+            print(f"sourcetype {stanza} already exists")
             return
-        raise
+        print(f"sourcetype create: {exc}")
 
 
 def ingest(events: list[dict], host: str = "qnb-lab") -> int:

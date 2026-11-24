@@ -53,6 +53,14 @@ def cmd_demo(_args):
     demo.apply()
 
 
+def cmd_fill(_args):
+    print("== 24h sample events ==")
+    samples.apply()
+    print("== KPI-aligned history for every catalog channel ==")
+    demo.fill_history()
+    print("KPI data ingested. Wait a few minutes for ITSI backfill, then refresh glass tables.")
+
+
 def cmd_apply_config(_args):
     print("== service tree ==")
     tree.apply()
@@ -100,6 +108,7 @@ def main(argv=None):
     sub.add_parser("export", help="Write services, KPIs, and glass tables to export/ without event data")
     sub.add_parser("seed", help="ping + tree + samples + KPIs + glass table")
     sub.add_parser("demo", help="Mixed leaf KPI data for the next 3 hours, plus an episode on each leaf")
+    sub.add_parser("fill", help="Write 24h of events across every KPI channel for the tree and glass tables")
     args = parser.parse_args(argv)
     {
         "ping": cmd_ping,
@@ -113,6 +122,7 @@ def main(argv=None):
         "export": cmd_export,
         "seed": cmd_seed,
         "demo": cmd_demo,
+        "fill": cmd_fill,
     }[args.cmd](args)
 
 

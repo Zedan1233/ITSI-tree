@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import unittest
 from datetime import datetime, timedelta
@@ -319,13 +320,16 @@ class DemoTests(unittest.TestCase):
         from itsi_lab.demo import (
             actual_severities,
             assign_plans,
+            channel_of,
             compile_channels,
             demo_window,
             episode_specs,
             generate_demo,
             leaf_titles,
         )
+        from itsi_lab.kpis import catalog
 
+        os.environ.pop("ITSI_LAB_DEMO_SEVERITY", None)
         now = datetime(2026, 10, 20, 7, 0, 0)
         last = datetime(2026, 10, 19, 20, 9, 10)
         start, end = demo_window(now, last)
@@ -349,6 +353,8 @@ class DemoTests(unittest.TestCase):
         times = [event["time"] for event in events]
         self.assertGreaterEqual(min(times), start)
         self.assertLess(max(times), start + timedelta(minutes=15))
+        catalog_channels = {channel_of(kpi) for kpis in catalog().values() for kpi in kpis}
+        self.assertTrue(catalog_channels.issubset(set(specs)), sorted(catalog_channels - set(specs)))
 
     def test_forced_critical_puts_every_leaf_in_critical(self):
         import os
