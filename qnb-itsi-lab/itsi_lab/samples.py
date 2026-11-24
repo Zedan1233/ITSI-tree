@@ -298,6 +298,16 @@ LEAF_PROFILES = {
         ("lookup_ms", 220, 1400, 15, "int"),
         ("open_referrals", 6, 22, 0.6, "int"),
     ],
+    "eligibility": [
+        ("approval_pct", 98, 78, 0.3, "pct"),
+        ("decision_ms", 220, 1600, 20, "int"),
+        ("error_pct", 0.4, 6.5, 0.1, "pct"),
+    ],
+    "printing": [
+        ("success_pct", 99, 86, 0.2, "pct"),
+        ("fulfill_min", 18, 150, 4, "int"),
+        ("reprint_pct", 0.8, 9.5, 0.2, "pct"),
+    ],
 }
 
 

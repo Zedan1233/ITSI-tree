@@ -34,6 +34,7 @@ python -m itsi_lab demo             # forward KPI data plus one episode per leaf
 QNB
  ├── Apply for Credit Card
  │    ├── APM / RUM / SNOW
+ │    ├── Card eligibility service / Card printing service
  │    └── Feedback → Call Center, Survey, Social Media
  ├── Apply for Personal Loan
  │    └── the same children, suffixed "(Apply for Personal Loan)"

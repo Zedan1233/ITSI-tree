@@ -11,7 +11,7 @@ from .kpis import catalog
 from .samples import ensure_index, ingest
 from .tree import load_tree
 
-# Aimed mix across the 26 leaves: mostly healthy, with visible low/medium/high/critical.
+# Aimed mix across the 28 leaves: mostly healthy, with visible low/medium/high/critical.
 PATTERN = [
     "normal",
     "low",

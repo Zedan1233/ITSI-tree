@@ -131,6 +131,8 @@ def better(pairs, field, gauge):
 
 LEAF_SERVICES = [
     ("APM", "svc_apm", "apm"),
+    ("Card eligibility service", "card_eligibility", "eligibility"),
+    ("Card printing service", "card_printing", "printing"),
     ("APM (Apply for Personal Loan)", "svc_apm_loan", "apm"),
     ("RUM (Apply for Personal Loan)", "svc_rum_loan", "rum"),
     ("SNOW (Apply for Personal Loan)", "svc_snow_loan", "snow"),
@@ -186,6 +188,16 @@ def _leaf_builders():
             _kpi("Appointment success", c, "success_pct", "avg", "%", 8, better([(0, "critical"), (75, "high"), (85, "medium"), (92, "low"), (96, "normal")], "success_pct", 100)),
             _kpi("Record lookup", c, "lookup_ms", "avg", "ms", 6, worse([(400, "low"), (800, "medium"), (1200, "high"), (2000, "critical")], "lookup_ms")),
             _kpi("Open referrals", c, "open_referrals", "avg", "referrals", 5, worse([(10, "low"), (15, "medium"), (20, "high"), (30, "critical")], "open_referrals")),
+        ],
+        "eligibility": lambda c: [
+            _kpi("Eligibility approval rate", c, "approval_pct", "avg", "%", 10, better([(0, "critical"), (70, "high"), (80, "medium"), (90, "low"), (96, "normal")], "approval_pct", 100)),
+            _kpi("Eligibility decision time", c, "decision_ms", "avg", "ms", 8, worse([(400, "low"), (800, "medium"), (1500, "high"), (2500, "critical")], "decision_ms")),
+            _kpi("Eligibility error rate", c, "error_pct", "avg", "%", 9, worse([(1, "low"), (2, "medium"), (4, "high"), (8, "critical")], "error_pct")),
+        ],
+        "printing": lambda c: [
+            _kpi("Print success rate", c, "success_pct", "avg", "%", 10, better([(0, "critical"), (80, "high"), (90, "medium"), (96, "low"), (99, "normal")], "success_pct", 100)),
+            _kpi("Print fulfillment time", c, "fulfill_min", "avg", "min", 8, worse([(30, "low"), (60, "medium"), (120, "high"), (240, "critical")], "fulfill_min")),
+            _kpi("Reprint rate", c, "reprint_pct", "avg", "%", 7, worse([(2, "low"), (4, "medium"), (8, "high"), (14, "critical")], "reprint_pct")),
         ],
     }
 

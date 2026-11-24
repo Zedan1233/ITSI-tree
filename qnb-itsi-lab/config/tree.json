@@ -13,6 +13,8 @@
         "children": [
           { "title": "APM", "role": "leaf" },
           { "title": "RUM", "role": "leaf" },
+          { "title": "Card eligibility service", "role": "leaf" },
+          { "title": "Card printing service", "role": "leaf" },
           { "title": "SNOW", "role": "leaf", "sample": "snow" },
           {
             "title": "Feedback",

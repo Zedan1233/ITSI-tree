@@ -54,7 +54,14 @@ PTF_KPIS = [
     ("Posts about this service", "Apply for Credit Card", "Posts about this service", ""),
 ]
 
-PTF_CHILDREN = ["APM", "RUM", "SNOW", "Feedback"]
+PTF_CHILDREN = [
+    "APM",
+    "RUM",
+    "Card eligibility service",
+    "Card printing service",
+    "SNOW",
+    "Feedback",
+]
 
 STATUS_COLORS = {
     "New": CYAN,
@@ -128,16 +135,16 @@ def build(services: dict, metrics: dict | None = None) -> dict:
         x = top_tile(b, index, label)
         health_value(b, services, title, x + 12, 128, 267, 58, 30, NAVY)
 
-    column_panel(b, 32, 730, "Journey children", "Application, experience, tickets and feedback", 400)
+    column_panel(b, 32, 730, "Journey children", "Application, eligibility, printing, tickets and feedback", 400)
     column_panel(b, 778, 380, "Apply for Credit Card", "Completion, incomplete applications, calls and posts", 400)
     column_panel(b, 1174, 394, "Platform services", "Infrastructure, AI agents and Auth Provider", 400)
 
     for i, title in enumerate(PTF_CHILDREN):
-        y = 312 + i * 62
-        b.rect(48, y, 698, 56, CARD, rx=8)
-        b.md(64, y + 6, 400, 22, title, TEXT, 15)
-        b.md(64, y + 30, 280, 18, "Service health", MUTED, 11)
-        health_value(b, services, title, 500, y + 4, 220, 48, 22, CARD, name=f"{title} child health")
+        y = 312 + i * 52
+        b.rect(48, y, 698, 48, CARD, rx=8)
+        b.md(64, y + 4, 400, 20, title, TEXT, 14)
+        b.md(64, y + 26, 280, 16, "Service health", MUTED, 11)
+        health_value(b, services, title, 500, y + 2, 220, 44, 20, CARD, name=f"{title} child health")
 
     pairs = [
         (312, "Journey KPIs", ("Completion rate", "%"), ("Incomplete applications", "")),

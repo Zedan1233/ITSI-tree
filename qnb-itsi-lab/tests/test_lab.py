@@ -28,7 +28,13 @@ class TreeTests(unittest.TestCase):
         names = [child["title"] for child in self.tree["root"]["children"]]
         self.assertEqual(names[:2], ["Apply for Credit Card", "Apply for Personal Loan"])
         self.assertIn("AI Agent Observability", names)
-        self.assertEqual(len(_walk(self.tree["root"], [])), 36)
+        self.assertEqual(len(_walk(self.tree["root"], [])), 38)
+        card = next(child for child in self.tree["root"]["children"] if child["title"] == "Apply for Credit Card")
+        card_names = [child["title"] for child in card["children"]]
+        self.assertEqual(
+            card_names[:4],
+            ["APM", "RUM", "Card eligibility service", "Card printing service"],
+        )
         self.assertNotIn("Payment", names)
         self.assertNotIn("Payment gateway", names)
 
@@ -79,6 +85,12 @@ class CatalogTests(unittest.TestCase):
         for title, kpis in catalog().items():
             self.assertGreaterEqual(len(kpis), 1, title)
             self.assertTrue(all('channel="' in kpi["base_search"] for kpi in kpis))
+        eligibility = {kpi["title"] for kpi in catalog()["Card eligibility service"]}
+        printing = {kpi["title"] for kpi in catalog()["Card printing service"]}
+        self.assertTrue(
+            {"Eligibility approval rate", "Eligibility decision time", "Eligibility error rate"}.issubset(eligibility)
+        )
+        self.assertTrue({"Print success rate", "Print fulfillment time", "Reprint rate"}.issubset(printing))
 
 
 class SampleTests(unittest.TestCase):
